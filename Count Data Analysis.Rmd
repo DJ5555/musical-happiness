@@ -1,0 +1,63 @@
+---
+title: "Count Data Analysis"
+---
+
+We use the function glm( ) to run the Poisson log linear model regression
+
+log(λit )= β0 + β1×Discount + β2×Target + β3×Income+ β4×Distant + β5×Gender 
+
+```{r}
+mv.data <- read.csv("Mall_visit.csv")
+```
+```{r}
+mv.re1= glm(Visit~Discount+Target+Income+Distant+Gender, data=mv.data, family = poisson)
+summary(mv.re1)
+```
+```{r}
+AIC(mv.re1)
+BIC(mv.re1)
+```
+
+Firstly, we transform the customer ID from integers into factors (levels). 
+
+According to the summary(), the coefficient of Target, B2 ，is not significant. 
+
+
+
+Next, we will allow each individual customer to have a different intercept  
+
+Log(λit )= β0i + β1×Discount + β2×Target + β3×Income+ β4×Distant + β5×Gender, 
+
+where the individual intercept β0i will be a random effect (500 of them) grouped by customerID.
+
+```{r}
+mv.re2= glmer(Visit~Discount+Target+Income+Distant+Gender+(1|customerID), data=mv.data, family = poisson)
+summary(mv.re2)
+```
+```{r}
+AIC(mv.re2)
+BIC(mv.re2)
+```
+
+We will also fit the negative binomial model for the count data.  Let the mean of the negative binomial distribution be
+
+log(λit )= β0 + β1×Discount + β2×Target + β3×Income+ β4×Distant + β5×Gender
+
+```{r}
+mv.re3= glm.nb(Visit~Discount+Target+Income+Distant+Gender, data=mv.data)
+summary(mv.re3)
+
+```
+```{r}
+AIC(mv.re3)
+BIC(mv.re3)
+```
+According to the summary(), the coefficient of Target，B2 ，is not significant. 
+
+Based on the AIC/BIC above, the second regression (Poisson linear model with random effect) is best model for the data.
+
+```{r}
+mv.re4= MCMChpoisson(Visit~Discount+Target+Income+Distant+Gender, random=~1,group = "customerID", data=mv.data, burnin = 10000, mcmc = 20000, thin = 20,r = 2,R=diag(1))
+summary(mv.re4$mcmc[,1:6])
+```
+All the coefficients are significant. 
