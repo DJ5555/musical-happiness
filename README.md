@@ -1,5 +1,4 @@
-# musical-happiness
-Count Data Analysis for Shopping Mall Visits
+# Count Data Analysis for Shopping Mall Visits
 
 
 In this exercise, we will apply regression models for count data, including a Poisson log-linear model and a negative binomial model to analyze a data set on the shopping mall visitation frequencies. The goal is to evaluate whether target marketing is effective in attracting consumers to visit the shopping mall. 
